@@ -64,6 +64,7 @@
         showCheckbox       : true,  // display the checkbox to the user
         checkboxAutoFit    : false,  // auto calc checkbox padding
         optionAttributes   : [],    // attributes to copy to the checkbox from the option element
+        initialization     : [], // added by zsmahi to enable an initialization without calling onload routine
 
         // Callbacks
         onLoad        : function( element ){},           // fires at end of list initialization
@@ -484,6 +485,39 @@
 
             // hide native select list
             $(instance.element).hide();
+            // initialization
+            // select any element matching the initialization array
+            //console.log(instance);
+            if (instance.options.initialization) {
+                var selected = instance.options.initialization;
+                var elementClass = instance.element.className
+                    .split(/\s+/)
+                    .filter((f) => f.includes("ms-list-"));
+                $("div#" + elementClass + " button span").empty();
+                $(
+                    "div#" +
+                    elementClass +
+                    " div.ms-options ul input[type=checkbox]"
+                ).each(function () {
+                    if (selected.includes($(this).val())) {
+                        if ($("div#" + elementClass + " button span").text()) {
+                            $("div#" + elementClass + " button span").text(
+                                $("div#" + elementClass + " button span").text() +
+                                ", " +
+                                $(this).val()
+                            );
+                        } else {
+                            $("div#" + elementClass + " button span").text(
+                                $(this).val()
+                            );
+                        }
+
+                        $("#" + $(this).attr("id")).prop("checked", true);
+                        $("div#" + elementClass).addClass("ms-has-selections");
+                    }
+                    //alert($(this).val());
+                });
+            }
         },
 
         /* LOAD SELECT OPTIONS */
